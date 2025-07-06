@@ -6,11 +6,19 @@ use Illuminate\Database\Seeder;
 use App\Models\City;
 use App\Models\Hotel;
 use App\Models\RoomClass;
+use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        User::create([
+            'name' => 'Admin',
+            'email' => 'admin@stay.local',
+            'password' => bcrypt('password'),
+            'role' => 'admin'
+        ]);
+
         $jakarta = City::create(['name' => 'Jakarta']);
         $bandung = City::create(['name' => 'Bandung']);
         $yogyakarta = City::create(['name' => 'Yogyakarta']);

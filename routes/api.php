@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\RoomController;
 use App\Http\Controllers\Api\AdminController;
+use App\Http\Controllers\Api\CheckinController;
 use App\Http\Controllers\Api\ReservationController;
 
 Route::post('/register', [AuthController::class, 'register']);
@@ -28,5 +29,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
         Route::get('/reservations', [AdminController::class, 'allReservations']);
         Route::put('/reservations/{id}', [AdminController::class, 'updateReservationStatus']);
+    });
+
+    Route::middleware('is_admin')->prefix('staff')->group(function () {
+        Route::post('/checkin/start', [CheckinController::class, 'start']);
+        Route::post('/checkin/confirm', [CheckinController::class, 'confirm']);
     });
 });

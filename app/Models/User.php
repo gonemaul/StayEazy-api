@@ -48,6 +48,15 @@ class User extends Authenticatable
         ];
     }
 
+    const ROLE_ADMIN = 'admin';
+    const ROLE_STAFF = 'staff';
+    const ROLE_USER = 'user';
+    const ROLES = [
+        self::ROLE_ADMIN,
+        self::ROLE_STAFF,
+        self::ROLE_USER
+    ];
+
     public function reservations()
     {
         return $this->hasMany(\App\Models\Reservation::class);

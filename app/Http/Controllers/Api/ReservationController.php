@@ -28,27 +28,27 @@ class ReservationController extends Controller
             'room_id' => 'required|exists:rooms,id',
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
-            'jumlah_kamar' => 'required|integer|min:1',
+            'count_rooms' => 'required|integer|min:1',
         ]);
 
         $room = Room::findOrFail($data['room_id']);
 
-        if ($data['jumlah_kamar'] > $room->jumlah_unit) {
+        if ($data['count_rooms'] > $room->jumlah_unit) {
             return response()->json(['message' => 'Jumlah kamar melebihi stok.'], 422);
         }
 
         $lama_menginap = now()->parse($data['check_in'])->diffInDays(now()->parse($data['check_out']));
-        $total_harga = $lama_menginap * $room->harga_per_malam * $data['jumlah_kamar'];
+        $total_harga = $lama_menginap * $room->harga_per_malam * $data['count_rooms'];
 
         $reservation = Reservation::create([
             'user_id' => $request->user()->id,
             'room_id' => $room->id,
             'check_in' => $data['check_in'],
             'check_out' => $data['check_out'],
-            'jumlah_kamar' => $data['jumlah_kamar'],
+            'count_rooms' => $data['count_rooms'],
             'status' => 'pending',
-            'total_harga' => $total_harga,
-            'kode_reservasi' => strtoupper(Str::random(10)),
+            'amout_price' => $total_harga,
+            'code_reservation' => strtoupper(Str::random(10)),
         ]);
 
         return response()->json([

@@ -14,10 +14,10 @@ class CheckinController extends Controller
     public function start(Request $request)
     {
         $request->validate([
-            'kode_reservasi' => 'required'
+            'code_reservation' => 'required'
         ]);
 
-        $reservation = Reservation::where('kode_reservasi', $request->kode_reservasi)->firstOrFail();
+        $reservation = Reservation::where('code_reservation', $request->code_reservation)->firstOrFail();
 
         if ($reservation->status !== 'confirmed') {
             return response()->json(['message' => 'Reservasi tidak valid'], 422);
@@ -37,11 +37,11 @@ class CheckinController extends Controller
     public function confirm(Request $request)
     {
         $request->validate([
-            'kode_reservasi' => 'required',
+            'code_reservation' => 'required',
             'otp' => 'required'
         ]);
 
-        $reservation = Reservation::where('kode_reservasi', $request->kode_reservasi)->first();
+        $reservation = Reservation::where('code_reservation', $request->code_reservation)->first();
 
         if (!$reservation || !$reservation->otp_code) {
             return response()->json(['message' => 'OTP tidak ditemukan'], 404);

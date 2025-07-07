@@ -27,25 +27,36 @@ class AdminController extends Controller
         $request->validate([
             'name' => 'required',
             'city_id' => 'required|exists:cities,id',
-            'alamat' => 'required',
-            'deskripsi' => 'nullable',
+            'address' => 'required',
+            'description' => 'nullable',
         ]);
-
-        $hotel = Hotel::create($request->all());
-
-        return response()->json(['message' => 'Hotel berhasil ditambahkan', 'data' => $hotel]);
+        DB::beginTransaction();
+        try {
+            $hotel = Hotel::create($request->all());
+            DB::commit();
+            return response()->json(['message' => 'Hotel berhasil ditambahkan', 'data' => $hotel]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Hotel gagal ditambahkan']);
+        }
     }
 
     public function storeRoomClass(Request $request)
     {
         $request->validate([
             'name' => 'required',
-            'deskripsi' => 'nullable',
+            'description' => 'nullable',
         ]);
 
-        $class = RoomClass::create($request->all());
-
-        return response()->json(['message' => 'Kelas kamar berhasil ditambahkan', 'data' => $class]);
+        DB::beginTransaction();
+        try {
+            $class = RoomClass::create($request->all());
+            DB::commit();
+            return response()->json(['message' => 'Kelas kamar berhasil ditambahkan', 'data' => $class]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Kelas kamar gagal ditambahkan']);
+        }
     }
 
     public function storeRoom(Request $request)
@@ -53,16 +64,22 @@ class AdminController extends Controller
         $request->validate([
             'hotel_id' => 'required|exists:hotels,id',
             'room_class_id' => 'required|exists:room_classes,id',
-            'nama_kamar' => 'required',
-            'jumlah_unit' => 'required|integer|min:1',
-            'kapasitas' => 'required|integer|min:1',
-            'harga_per_malam' => 'required|numeric|min:0',
-            'deskripsi' => 'nullable',
+            'name' => 'required',
+            'unit' => 'required|integer|min:1',
+            'capacuty' => 'required|integer|min:1',
+            'price_day' => 'required|numeric|min:0',
+            'description' => 'nullable',
         ]);
 
-        $room = Room::create($request->all());
-
-        return response()->json(['message' => 'Kamar berhasil ditambahkan', 'data' => $room]);
+        DB::beginTransaction();
+        try {
+            $room = Room::create($request->all());
+            DB::commit();
+            return response()->json(['message' => 'Kamar berhasil ditambahkan', 'data' => $room]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => 'Kamar gagal ditambahkan']);
+        }
     }
 
     public function allReservations()
@@ -89,6 +106,7 @@ class AdminController extends Controller
             DB::commit();
             return response()->json(['message' => 'Status reservasi diperbarui', 'data' => $reservation]);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => 'Status reservasi gagal diperbarui', 'data' => $reservation, 'error' => $e->getMessage()]);
         }
     }

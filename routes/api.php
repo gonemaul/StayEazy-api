@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/reservations/{id}', [AdminController::class, 'updateReservationStatus']);
     });
 
-    Route::middleware('is_admin')->prefix('staff')->group(function () {
+    Route::middleware('is_staff')->prefix('staff')->group(function () {
         Route::post('/checkin/start', [CheckinController::class, 'start']);
         Route::post('/checkin/confirm', [CheckinController::class, 'confirm']);
     });

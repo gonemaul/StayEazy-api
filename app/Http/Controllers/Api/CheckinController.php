@@ -55,7 +55,7 @@ class CheckinController extends Controller
             return response()->json(['message' => 'OTP sudah kedaluwarsa'], 410);
         }
 
-        $reservation->status = 'checked_in';
+        $reservation->status = 'expired';
         $reservation->otp_verified_at = now();
         $reservation->save();
 

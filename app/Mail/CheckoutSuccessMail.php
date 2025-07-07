@@ -2,7 +2,6 @@
 
 namespace App\Mail;
 
-use App\Models\Reservation;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -10,7 +9,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CheckinOtpMail extends Mailable
+class CheckoutSuccessMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,16 +17,15 @@ class CheckinOtpMail extends Mailable
      * Create a new message instance.
      */
     public $reservation;
-
-    public function __construct(Reservation $reservation)
+    public function __construct($reservation)
     {
         $this->reservation = $reservation;
     }
 
     public function build()
     {
-        return $this->subject('Kode OTP Check-in Anda')
-            ->view('emails.check-in_otp');
+        return $this->subject('Terima Kasih Telah Menginap di StayEazy')
+            ->view('emails.checkout_success');
     }
 
     /**
@@ -36,7 +34,7 @@ class CheckinOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Checkin Otp Mail',
+            subject: 'Checkout Success Mail',
         );
     }
 

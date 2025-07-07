@@ -2,13 +2,18 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Mail\ReservationCancelledMail;
 use App\Models\City;
 use App\Models\Room;
 use App\Models\Hotel;
 use App\Models\RoomClass;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\ReservationConfirmedMail;
+use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
@@ -71,10 +76,20 @@ class AdminController extends Controller
             'status' => 'required|in:confirmed,cancelled,expired'
         ]);
 
-        $reservation = Reservation::findOrFail($id);
-        $reservation->status = $request->status;
-        $reservation->save();
-
-        return response()->json(['message' => 'Status reservasi diperbarui', 'data' => $reservation]);
+        DB::beginTransaction();
+        try {
+            $reservation = Reservation::findOrFail($id);
+            $reservation->status = $request->status;
+            $reservation->save();
+            if ($reservation->status == 'confirmed') {
+                Mail::to($reservation->user->email)->send(new ReservationConfirmedMail($reservation));
+            } else if ($reservation->status == 'cancelled') {
+                Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
+            }
+            DB::commit();
+            return response()->json(['message' => 'Status reservasi diperbarui', 'data' => $reservation]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Status reservasi gagal diperbarui', 'data' => $reservation, 'error' => $e->getMessage()]);
+        }
     }
 }

@@ -11,11 +11,11 @@ return new class extends Migration {
             $table->id();
             $table->unsignedBigInteger('hotel_id');
             $table->unsignedBigInteger('room_class_id');
-            $table->string('nama_kamar');
-            $table->integer('jumlah_unit');
-            $table->integer('kapasitas');
-            $table->decimal('harga_per_malam', 12, 2);
-            $table->text('deskripsi')->nullable();
+            $table->string('name');
+            $table->integer('unit');
+            $table->integer('capacity');
+            $table->decimal('price_day', 12, 2);
+            $table->text('description')->nullable();
             $table->timestamps();
 
             $table->foreign('hotel_id')->references('id')->on('hotels')->onDelete('cascade');

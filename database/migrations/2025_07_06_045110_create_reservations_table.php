@@ -13,10 +13,10 @@ return new class extends Migration {
             $table->unsignedBigInteger('room_id');
             $table->date('check_in');
             $table->date('check_out');
-            $table->integer('jumlah_kamar');
-            $table->decimal('total_harga', 12, 2);
-            $table->enum('status', ['pending', 'confirmed', 'cancelled', 'expired'])->default('pending');
-            $table->string('kode_reservasi')->unique();
+            $table->integer('count_rooms');
+            $table->decimal('amount_price', 12, 2);
+            $table->string('status')->default('pending');
+            $table->string('code_reservation')->unique();
             $table->string('payment_token')->nullable();
             $table->timestamps();
 

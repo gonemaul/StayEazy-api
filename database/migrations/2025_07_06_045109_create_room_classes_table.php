@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('room_classes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->text('deskripsi')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

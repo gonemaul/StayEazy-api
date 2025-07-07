@@ -11,8 +11,8 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->unsignedBigInteger('city_id');
-            $table->string('alamat');
-            $table->text('deskripsi')->nullable();
+            $table->string('address');
+            $table->text('description')->nullable();
             $table->timestamps();
 
             $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');

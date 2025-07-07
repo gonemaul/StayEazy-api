@@ -10,18 +10,27 @@ class Room extends Model
     use HasFactory;
 
     protected $fillable = [
-        'hotel_id', 'room_class_id', 'nama_kamar', 'jumlah_unit', 'kapasitas', 'harga_per_malam', 'deskripsi'
+        'hotel_id',
+        'room_class_id',
+        'name',
+        'unit',
+        'capacity',
+        'price_day',
+        'description'
     ];
 
-    public function hotel() {
+    public function hotel()
+    {
         return $this->belongsTo(Hotel::class);
     }
 
-    public function roomClass() {
+    public function roomClass()
+    {
         return $this->belongsTo(RoomClass::class);
     }
 
-    public function reservations() {
+    public function reservations()
+    {
         return $this->hasMany(Reservation::class);
     }
 }

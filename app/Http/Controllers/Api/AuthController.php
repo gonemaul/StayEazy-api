@@ -10,6 +10,23 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    /**
+     * @OA\Post(
+     *     path="/api/login",
+     *     tags={"Auth"},
+     *     summary="Login user",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"email","password"},
+     *             @OA\Property(property="email", type="string", example="user@example.com"),
+     *             @OA\Property(property="password", type="string", example="secret123")
+     *         )
+     *     ),
+     *     @OA\Response(response=200, description="Login berhasil"),
+     *     @OA\Response(response=401, description="Unauthorized"),
+     * )
+     */
     public function register(Request $request)
     {
         $request->validate([

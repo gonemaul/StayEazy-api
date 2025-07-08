@@ -57,16 +57,16 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::prefix('rooms')->group(function () {
             Route::post('room-classes', 'storeRoomClass');
-            Route::put('room-classes');
+            Route::put('room-classes', 'updateRoomClass');
             Route::post('rooms', 'storeRoom');
-            Route::put('rooms');
+            Route::put('rooms', 'updateRoom');
         });
         Route::prefix('staff')->group(function () {
-            Route::post('create');
-            Route::put('{id}/update');
-            Route::delete('{id}/delete');
+            Route::post('create', 'createStaff');
+            Route::put('{id}/update', 'updateStaff');
+            Route::delete('{id}/delete', 'deleteStaff');
         });
-        Route::post('notifications');
+        Route::post('notifications', 'notifications');
         Route::post('room-prices');
         Route::get('reservations', 'allReservations');
         Route::put('reservations/{id}', 'updateReservationStatus');

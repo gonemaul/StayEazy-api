@@ -2,112 +2,87 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Mail\ReservationCancelledMail;
 use App\Models\City;
 use App\Models\Room;
 use App\Models\Hotel;
 use App\Models\RoomClass;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use App\Services\CityService;
+use App\Services\RoomService;
+use App\Services\HotelService;
+use App\Services\StaffService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Services\ReservationService;
 use Illuminate\Support\Facades\Mail;
+use App\Services\NotificationService;
+use App\Mail\ReservationCancelledMail;
 use App\Mail\ReservationConfirmedMail;
-use Illuminate\Http\JsonResponse;
 
 class AdminController extends Controller
 {
     public function cities()
     {
-        return City::all();
+        return CityService::listCities();
     }
 
     public function storeHotel(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'city_id' => 'required|exists:cities,id',
-            'address' => 'required',
-            'description' => 'nullable',
-        ]);
-        DB::beginTransaction();
-        try {
-            $hotel = Hotel::create($request->all());
-            DB::commit();
-            return response()->json(['message' => 'Hotel berhasil ditambahkan', 'data' => $hotel]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Hotel gagal ditambahkan']);
-        }
+        return HotelService::store($request);
+    }
+
+    public function updateHotel(Request $request, $id)
+    {
+        return HotelService::update($request, $id);
     }
 
     public function storeRoomClass(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'description' => 'nullable',
-        ]);
+        return RoomService::storeRoomClass($request);
+    }
 
-        DB::beginTransaction();
-        try {
-            $class = RoomClass::create($request->all());
-            DB::commit();
-            return response()->json(['message' => 'Kelas kamar berhasil ditambahkan', 'data' => $class]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Kelas kamar gagal ditambahkan']);
-        }
+    public function updateRoomClass(Request $request)
+    {
+        return RoomService::updateRoomClass($request);
     }
 
     public function storeRoom(Request $request)
     {
-        $request->validate([
-            'hotel_id' => 'required|exists:hotels,id',
-            'room_class_id' => 'required|exists:room_classes,id',
-            'name' => 'required',
-            'unit' => 'required|integer|min:1',
-            'capacuty' => 'required|integer|min:1',
-            'price_day' => 'required|numeric|min:0',
-            'description' => 'nullable',
-        ]);
+        return RoomService::storeRoom($request);
+    }
 
-        DB::beginTransaction();
-        try {
-            $room = Room::create($request->all());
-            DB::commit();
-            return response()->json(['message' => 'Kamar berhasil ditambahkan', 'data' => $room]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Kamar gagal ditambahkan']);
-        }
+    public function updateRoom(Request $request)
+    {
+        return RoomService::updateRoom($request);
+    }
+
+    public function createStaff(Request $request)
+    {
+        return StaffService::create($request);
+    }
+    public function updateStaff(Request $request, $id)
+    {
+        return StaffService::update($request, $id);
+    }
+    public function deleteStaff(Request $request, $id)
+    {
+        return StaffService::delete($request, $id);
+    }
+
+    public function notifications(Request $request)
+    {
+        return NotificationService::sendNotification($request);
     }
 
     public function allReservations()
     {
-        return Reservation::with('room.hotel.city', 'user')->orderBy('created_at', 'desc')->get();
+        return ReservationService::listAllReservations();
     }
 
     public function updateReservationStatus(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:confirmed,cancelled,expired'
-        ]);
-
-        DB::beginTransaction();
-        try {
-            $reservation = Reservation::findOrFail($id);
-            $reservation->status = $request->status;
-            $reservation->save();
-            if ($reservation->status == 'confirmed') {
-                Mail::to($reservation->user->email)->send(new ReservationConfirmedMail($reservation));
-            } else if ($reservation->status == 'cancelled') {
-                Mail::to($reservation->user->email)->send(new ReservationCancelledMail($reservation));
-            }
-            DB::commit();
-            return response()->json(['message' => 'Status reservasi diperbarui', 'data' => $reservation]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json(['message' => 'Status reservasi gagal diperbarui', 'data' => $reservation, 'error' => $e->getMessage()]);
-        }
+        return ReservationService::updateReservationStatus($id, $request->status);
     }
 }

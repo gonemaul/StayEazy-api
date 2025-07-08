@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // detail reservasi + status
             Route::get('/{id}',  'show');
             // buat reservasi
-            Route::post('/',  'store');
+            Route::post('/',  'create');
             // cancel reservasi
             Route::post('/{id}/cancel');
         });

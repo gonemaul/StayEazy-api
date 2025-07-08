@@ -17,14 +17,18 @@ class AuthService
             'password' => 'required|confirmed|min:6',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => User::ROLE_USER
-        ]);
+        try {
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => bcrypt($request->password),
+                'role' => User::ROLE_USER
+            ]);
 
-        return response()->json(['message' => 'Register berhasil'], 201);
+            return response()->json(['message' => 'Register berhasil'], 201);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Registrasi gagal'], 500);
+        }
     }
 
     public static function login(Request $request)
@@ -34,27 +38,35 @@ class AuthService
             'password' => 'required'
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        try {
+            $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['Email atau password salah.']
+            if (!$user || !Hash::check($request->password, $user->password)) {
+                throw ValidationException::withMessages([
+                    'email' => ['Email atau password salah.']
+                ]);
+            }
+
+            $user->tokens()->delete();
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $user,
             ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Login gagal']);
         }
-
-        $user->tokens()->delete();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-            'user' => $user
-        ]);
     }
 
     public static function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'Logout berhasil']);
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json(['message' => 'Logout berhasil']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Logout gagal']);
+        }
     }
 }

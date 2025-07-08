@@ -9,23 +9,20 @@ use App\Http\Controllers\Controller;
 
 class PublicController extends Controller
 {
-    public function index()
+    public function listHotel()
     {
-        return RoomService::listRooms();
+        return HotelService::listHotels();
     }
-
-    public function show($id)
-    {
-        return RoomService::roomDetail($id);
-    }
-
-    public function rooms($hotelId)
+    public function roomsByHotel($hotelId)
     {
         return HotelService::roomsByHotel($hotelId);
     }
-
-    public function roomDetail($hotelId, $rid)
+    public function roomDetail($hotelId, $rId)
     {
-        return HotelService::roomDetail($hotelId, $rid);
+        return HotelService::roomDetail($hotelId, $rId);
+    }
+    public function roomAvailable(Request $request)
+    {
+        return RoomService::checkAvailability($request);
     }
 }

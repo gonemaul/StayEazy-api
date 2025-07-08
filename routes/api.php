@@ -13,14 +13,12 @@ Route::post('/login', [AuthController::class, 'login']);
 
 Route::controller(PublicController::class)->group(function () {
     Route::prefix('hotels')->group(function () {
-        Route::get('/', 'index');
-        Route::get('/{id}/rooms', 'rooms');
+        Route::get('/', 'listHotel');
+        Route::get('/{id}/rooms', 'roomsByHotel');
         Route::get('/{id}/rooms/{rid}', 'roomDetail');
     });
 
-    Route::get('/rooms',  'index');
-    Route::post('/rooms/availability',  'index');
-    Route::get('/rooms/{id}',  'show');
+    Route::post('/rooms/availability',  'roomAvailable');
 });
 
 // Auth Route
@@ -30,11 +28,16 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Only
     Route::controller(UserController::class)->group(function () {
         Route::prefix('reservations')->group(function () {
+            // daftar my reservasi
             Route::get('/',  'index');
+            // detail reservasi + status
             Route::get('/{id}',  'show');
+            // buat reservasi
             Route::post('/',  'store');
+            // cancel reservasi
             Route::post('/{id}/cancel');
         });
+        // get notifikasi
         Route::get('notifications');
     });
 
@@ -53,7 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::prefix('hotels')->group(function () {
             Route::post('/', 'storeHotel');
-            Route::post('{id}/update', 'updateHotel');
+            Route::put('{id}/update', 'updateHotel');
         });
         Route::prefix('rooms')->group(function () {
             Route::post('room-classes', 'storeRoomClass');
@@ -67,7 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::delete('{id}/delete', 'deleteStaff');
         });
         Route::post('notifications', 'notifications');
-        Route::post('room-prices');
         Route::get('reservations', 'allReservations');
         Route::put('reservations/{id}', 'updateReservationStatus');
     });

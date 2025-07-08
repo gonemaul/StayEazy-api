@@ -14,6 +14,7 @@ class StaffService
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed|min:6',
+            'hotel_id' => 'required|exist:hotels,id'
         ]);
         DB::beginTransaction();
         try {
@@ -21,7 +22,8 @@ class StaffService
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => bcrypt($request->password),
-                'role' => User::ROLE_STAFF
+                'role' => User::ROLE_STAFF,
+                'hotel_id' => $request->hotel_id
             ]);
             DB::commit();
             return response()->json(['message' => 'Akun Staff berhasil dibuat.'], 201);
@@ -36,15 +38,13 @@ class StaffService
             'name' => 'required|string|max:100',
             'email' => 'required|email',
             'password' => 'required|min:6',
+            'hotel_id' => 'required|exists:hotels,id'
         ]);
 
         DB::beginTransaction();
         try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => bcrypt($request->password),
-            ]);
+            $staff = User::where('role', 'staff')->findOrFail($id);
+            $staff->update($request->only(['name', 'email', 'hotel_id']));
             DB::commit();
 
             return response()->json(['message' => 'Akun Staff berhasil diperbarui.'], 201);

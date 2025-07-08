@@ -12,6 +12,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $jakarta = City::create(['name' => 'Jakarta']);
+        $bandung = City::create(['name' => 'Bandung']);
+        $yogyakarta = City::create(['name' => 'Yogyakarta']);
+
         User::create([
             'name' => 'Admin',
             'email' => 'admin@stay.com',
@@ -23,25 +27,24 @@ class DatabaseSeeder extends Seeder
             'name' => 'Staff Jakarta',
             'email' => 'staff@stayjakarta.com',
             'password' => bcrypt('password'),
-            'role' => 'staff'
+            'role' => 'staff',
+            'hotel_id' => $jakarta->id
         ]);
 
         User::create([
             'name' => 'Staff Bandung',
             'email' => 'staff@staybandung.com',
             'password' => bcrypt('password'),
-            'role' => 'staff'
+            'role' => 'staff',
+            'hotel_id' => $bandung->id
         ]);
         User::create([
             'name' => 'Staff Yogyakarta',
             'email' => 'staff@stayyogyakarta.com',
             'password' => bcrypt('password'),
-            'role' => 'staff'
+            'role' => 'staff',
+            'hotel_id' => $yogyakarta->id
         ]);
-
-        $jakarta = City::create(['name' => 'Jakarta']);
-        $bandung = City::create(['name' => 'Bandung']);
-        $yogyakarta = City::create(['name' => 'Yogyakarta']);
 
         Hotel::create(['name' => 'Hotel Melati', 'city_id' => $jakarta->id, 'address' => 'Jl. Merdeka 1', 'description' => 'Hotel sederhana di Jakarta']);
         Hotel::create(['name' => 'Villa Lembang', 'city_id' => $bandung->id, 'address' => 'Lembang, Bandung', 'description' => 'Villa pegunungan yang sejuk']);

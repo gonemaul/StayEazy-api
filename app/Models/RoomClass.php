@@ -9,10 +9,16 @@ class RoomClass extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description'];
+    protected $fillable = [
+        'hotel_id',
+        'name',
+        'price',
+        'capacity',
+        'description'
+    ];
 
     public function rooms()
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(RoomUnit::class);
     }
 }

@@ -52,23 +52,8 @@ class DatabaseSeeder extends Seeder
             'hotel_id' => $hotelYogya->id
         ]);
 
-        $roomClasses = ['Standard', 'Deluxe', 'Superior', 'Suite', 'Executive'];
-        foreach ($roomClasses as $class) {
-            RoomClass::create(['name' => $class]);
-        }
-
-        $roomClasses = RoomClass::pluck('id')->toArray();
-        $hotels = Hotel::pluck('id')->toArray();
-        for ($i = 0; $i < 20; $i++) {
-            Room::create([
-                'room_class_id' => fake()->randomElement($roomClasses),
-                'hotel_id' => fake()->randomElement($hotels),
-                'name' => 'Room ' . strtoupper(Str::random(3)) . rand(1, 99),
-                'unit' => fake()->numberBetween(1, 10),
-                'capacity' => fake()->numberBetween(1, 5),
-                'price_day' => fake()->numberBetween(250000, 1500000),
-                'description' => fake()->sentence(10),
-            ]);
-        }
+        $this->call([
+            RoomClassSeeder::class,
+        ]);
     }
 }

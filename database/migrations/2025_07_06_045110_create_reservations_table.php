@@ -9,19 +9,16 @@ return new class extends Migration {
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('room_id');
-            $table->date('check_in');
-            $table->date('check_out');
-            $table->integer('count_rooms');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('room_unit_id')->constrained()->onDelete('cascade');
+            $table->date('checkin_date');
+            $table->date('checkout_date');
+            $table->integer('guest_count')->default(1);;
+            $table->string('code_reservation')->unique();
             $table->decimal('amount_price', 12, 2);
             $table->string('status')->default('pending');
-            $table->string('code_reservation')->unique();
             $table->string('payment_token')->nullable();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('room_id')->references('id')->on('rooms')->onDelete('cascade');
         });
     }
 

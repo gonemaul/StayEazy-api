@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Room;
 use App\Models\RoomClass;
 use App\Models\Reservation;
+use App\Models\RoomUnit;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,12 +14,12 @@ class RoomService
 {
     public static function listRooms()
     {
-        return Room::with('hotel', 'roomClass')->get();
+        return RoomUnit::with('hotel', 'roomClass')->get();
     }
 
     public static function roomDetail($id)
     {
-        return Room::with('hotel', 'roomClass')->findOrFail($id);
+        return RoomUnit::with('hotel', 'roomClass')->findOrFail($id);
     }
 
     public static function checkAvailability(Request $request)
@@ -34,7 +35,7 @@ class RoomService
         $checkin = Carbon::parse($validated['check_in']);
         $checkout = Carbon::parse($validated['check_out']);
 
-        $query = Room::with('hotel', 'roomClass');
+        $query = RoomUnit::with('hotel', 'roomClass');
 
         if (!empty($validated['hotel_id'])) {
             $query->where('hotel_id', $validated['hotel_id']);
@@ -109,7 +110,7 @@ class RoomService
 
         DB::beginTransaction();
         try {
-            $room = Room::create($request->all());
+            $room = RoomUnit::create($request->all());
             DB::commit();
             return response()->json(['message' => 'Kamar berhasil ditambahkan', 'data' => $room]);
         } catch (\Exception $e) {
@@ -131,7 +132,7 @@ class RoomService
 
         DB::beginTransaction();
         try {
-            $room = Room::create($request->all());
+            $room = RoomUnit::create($request->all());
             DB::commit();
             return response()->json(['message' => 'Kamar berhasil ditambahkan', 'data' => $room]);
         } catch (\Exception $e) {

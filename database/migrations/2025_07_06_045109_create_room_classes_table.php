@@ -9,7 +9,10 @@ return new class extends Migration {
     {
         Schema::create('room_classes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('hotel_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->decimal('price', 12, 2);
+            $table->integer('capacity')->default(2);
             $table->text('description')->nullable();
             $table->timestamps();
         });

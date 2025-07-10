@@ -18,6 +18,6 @@ class Hotel extends Model
 
     public function rooms()
     {
-        return $this->hasMany(Room::class);
+        return $this->hasMany(RoomUnit::class);
     }
 }

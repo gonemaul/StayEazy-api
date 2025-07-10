@@ -15,6 +15,13 @@ class RoomUnit extends Model
         'status'
     ];
 
+    const AVAILABLE = 'available';
+    const MAINTENANCE = 'maintenance';
+    const STATUSES = [
+        self::AVAILABLE,
+        self::MAINTENANCE
+    ];
+
     public function hotel()
     {
         return $this->belongsTo(Hotel::class);

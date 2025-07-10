@@ -22,9 +22,9 @@ class UserController extends Controller
 
     public function create(Request $request)
     {
-        return response()->json([
-            'data' => ReservationService::storeReservation($request, auth()->user())
-        ]);
+        // return response()->json([
+        return ReservationService::storeReservation($request);
+        // ]);
     }
 
     public function cancel($id)

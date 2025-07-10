@@ -24,41 +24,48 @@ class RoomService
 
     public static function checkAvailability(Request $request)
     {
-        $validated = $request->validate([
-            'check_in' => 'required|date|after_or_equal:today',
-            'check_out' => 'required|date|after:check_in',
-            'hotel_id' => 'nullable|exists:hotels,id',
-            'room_class_id' => 'nullable|exists:room_classes,id',
-            'guest_count' => 'nullable|integer|min:1'
+        $request->validate([
+            'room_class_id' => 'required|exists:room_classes,id',
+            'checkin_date' => 'required|date',
+            'checkout_date' => 'required|date|after:checkin_date',
+            'quantity' => 'required|integer|min:1',
         ]);
 
-        $checkin = Carbon::parse($validated['check_in']);
-        $checkout = Carbon::parse($validated['check_out']);
+        $units = RoomUnit::with('reservations')
+            ->where('room_class_id', $request->room_class_id)
+            ->where('status', RoomUnit::AVAILABLE)
+            ->get();
 
-        $query = RoomUnit::with('hotel', 'roomClass');
+        $available = $units->filter(function ($unit) use ($request) {
+            return !$unit->reservations()->where(function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
+                        ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
+                        ->orWhere(function ($q) use ($request) {
+                            $q->where('checkin_date', '<=', $request->checkin_date)
+                                ->where('checkout_date', '>=', $request->checkout_date);
+                        });
+                });
+            })->exists();
+        })->take($request->quantity)->values();
 
-        if (!empty($validated['hotel_id'])) {
-            $query->where('hotel_id', $validated['hotel_id']);
+        if ($available->count() < $request->quantity) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Jumlah kamar tidak mencukupi untuk tanggal tersebut.',
+                'data' => [],
+            ], 422);
         }
 
-        if (!empty($validated['room_class_id'])) {
-            $query->where('room_class_id', $validated['room_class_id']);
-        }
-
-        // Guest count tidak dipakai filter jumlah room di sini, tapi bisa dipakai nanti saat booking
-
-        $availableRooms = $query->whereDoesntHave('reservations', function ($q) use ($checkin, $checkout) {
-            $q->where(function ($query) use ($checkin, $checkout) {
-                $query->whereBetween('check_in', [$checkin, $checkout->copy()->subDay()])
-                    ->orWhereBetween('check_out', [$checkin->copy()->addDay(), $checkout])
-                    ->orWhere(function ($q2) use ($checkin, $checkout) {
-                        $q2->where('check_in', '<=', $checkin)
-                            ->where('check_out', '>=', $checkout);
-                    });
-            })->whereNotIn('status', ['cancelled']);
-        })->get();
-
-        return $availableRooms;
+        return response()->json([
+            'success' => true,
+            'message' => 'Kamar tersedia.',
+            'data' => [
+                'id' => $available,
+                // 'room_class_id' => $available->room_class_id,
+                // 'room_number' => $available->room_number,
+            ]
+        ]);
     }
     public static function storeRoomClass(Request $request)
     {

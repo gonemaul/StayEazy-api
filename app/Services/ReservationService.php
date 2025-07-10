@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\RoomUnit;
 use App\Models\Reservation;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -17,66 +19,100 @@ class ReservationService
             if ($res->isEmpty()) {
                 return response()->json(['message' => 'Anda belum pernah melakukan reservasi']);
             }
+            return $res;
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Anda belum pernah melakukan reservasi']);
+            return response()->json(['message' => 'Reservasi gagal ditemukan.']);
         }
     }
 
     public static function userReservationDetail($id)
     {
         try {
-            $res = Reservation::with('room', 'room.hotel')->findOrFail($id);
+            $res = Reservation::with('roomUnit')->findOrFail($id);
             return $res;
         } catch (\Exception $e) {
             return response()->json(['message' => 'Reservasi tidak ditemukan']);
         }
     }
 
-    public static function storeReservation(Request $request, User $user)
+    public static function storeReservation(Request $request)
     {
         $request->validate([
-            'room_id' => 'required|exists:rooms,id',
+            'room_class_id' => 'required|exists:room_classes,id',
             'checkin_date' => 'required|date|after_or_equal:today',
             'checkout_date' => 'required|date|after:checkin_date',
-            'count_rooms' => 'required|integer|min:1',
+            'quantity' => 'required|integer|min:1',
+            'guest_count' => 'nullable|integer|min:1'
         ]);
+        $userId = auth()->id();
 
-        return DB::transaction(function () use ($request, $user) {
-            // Cek ketersediaan
-            $isBooked = Reservation::where('room_id', $request->room_id)
-                ->where('status', '!=', 'cancelled')
-                ->where(function ($q) use ($request) {
-                    $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
-                        ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
-                        ->orWhere(function ($q2) use ($request) {
-                            $q2->where('checkin_date', '<=', $request->checkin_date)
-                                ->where('checkout_date', '>=', $request->checkout_date);
-                        });
+        DB::beginTransaction();
+
+        try {
+            // Ambil unit kamar dari class
+            $units = RoomUnit::with('roomClass')->where('room_class_id', $request->room_class_id)
+                ->where('status', 'available')
+                ->get();
+
+            // Filter unit yang tidak bentrok dengan booking lain
+            $availableUnits = $units->filter(function ($unit) use ($request) {
+                return !$unit->reservations()->where(function ($query) use ($request) {
+                    $query->where(function ($q) use ($request) {
+                        $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
+                            ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
+                            ->orWhere(function ($q) use ($request) {
+                                $q->where('checkin_date', '<=', $request->checkin_date)
+                                    ->where('checkout_date', '>=', $request->checkout_date);
+                            });
+                    });
                 })->exists();
+            })->take($request->quantity);
 
-            if ($isBooked) {
-                throw new \Exception('Kamar tidak tersedia pada tanggal tersebut');
+            if ($availableUnits->count() < $request->quantity) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Kamar yang tersedia tidak mencukupi.',
+                    'data' => []
+                ], 422);
             }
 
-            $reservation = Reservation::create([
-                'user_id' => $user->id,
-                'room_id' => $request->room_id,
-                'checkin_date' => $request->checkin_date,
-                'checkout_date' => $request->checkout_date,
-                'status' => 'pending',
+            $created = [];
+            $checkin = Carbon::parse($request->checkin_date);
+            $checkout = Carbon::parse($request->checkout_date);
+            $nights = $checkin->diffInDays($checkout); // jumlah malam
 
-                'code' => strtoupper(Str::random(6)),
+            foreach ($availableUnits as $unit) {
+                $pricePerNight = $unit->roomClass->price;
+                $amount = $nights * $pricePerNight;
+
+                $created[] = Reservation::create([
+                    'user_id' => $userId,
+                    'room_unit_id' => $unit->id,
+                    'checkin_date' => $request->checkin_date,
+                    'checkout_date' => $request->checkout_date,
+                    'guest_count' => $request->guest_count ?? 1,
+                    'amount_price' => $amount,
+                    'code_reservation' => strtoupper(Str::random(6)),
+                    'status' => Reservation::PENDING
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Reservasi berhasil dibuat.',
+                'data' => $created,
             ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
 
-            try {
-                // Mail::to($user->email)->send(new \App\Mail\ReservationCreated($reservation));
-            } catch (\Throwable $e) {
-                // Log::error('Gagal kirim email: ' . $e->getMessage());
-                // Tidak perlu throw ulang kalau tidak krusial
-            }
-
-            return $reservation;
-        });
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal melakukan reservasi.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public static function cancelReservation($id, User $user)

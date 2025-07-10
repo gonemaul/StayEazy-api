@@ -11,10 +11,10 @@ class Reservation extends Model
 
     protected $fillable = [
         'user_id',
-        'room_id',
-        'check_in',
-        'check_out',
-        'count_rooms',
+        'room_unit_id',
+        'checkin_date',
+        'checkout_date',
+        'guest_count',
         'amount_price',
         'status',
         'code_reservation',
@@ -45,8 +45,8 @@ class Reservation extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function room()
+    public function roomUnit()
     {
-        return $this->belongsTo(Room::class);
+        return $this->belongsTo(RoomUnit::class);
     }
 }

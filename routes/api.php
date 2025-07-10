@@ -33,7 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
             // detail reservasi + status
             Route::get('/{id}',  'show');
             // buat reservasi
-            Route::post('/',  'create');
+            Route::post('/create',  'create');
             // cancel reservasi
             Route::post('/{id}/cancel');
         });
@@ -61,8 +61,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('rooms')->group(function () {
             Route::post('room-classes', 'storeRoomClass');
             Route::put('room-classes', 'updateRoomClass');
-            Route::post('rooms', 'storeRoom');
-            Route::put('rooms', 'updateRoom');
+            Route::post('/create', 'storeRoom');
+            Route::put('/{$id}/update', 'updateRoom');
         });
         Route::prefix('staff')->group(function () {
             Route::post('create', 'createStaff');

@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Room;
 use App\Models\RoomClass;
+use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class RoomService
@@ -21,8 +23,41 @@ class RoomService
 
     public static function checkAvailability(Request $request)
     {
-        // logika filter berdasarkan tanggal, kelas dll.
-        // return Room::where(...)->get();
+        $validated = $request->validate([
+            'check_in' => 'required|date|after_or_equal:today',
+            'check_out' => 'required|date|after:check_in',
+            'hotel_id' => 'nullable|exists:hotels,id',
+            'room_class_id' => 'nullable|exists:room_classes,id',
+            'guest_count' => 'nullable|integer|min:1'
+        ]);
+
+        $checkin = Carbon::parse($validated['check_in']);
+        $checkout = Carbon::parse($validated['check_out']);
+
+        $query = Room::with('hotel', 'roomClass');
+
+        if (!empty($validated['hotel_id'])) {
+            $query->where('hotel_id', $validated['hotel_id']);
+        }
+
+        if (!empty($validated['room_class_id'])) {
+            $query->where('room_class_id', $validated['room_class_id']);
+        }
+
+        // Guest count tidak dipakai filter jumlah room di sini, tapi bisa dipakai nanti saat booking
+
+        $availableRooms = $query->whereDoesntHave('reservations', function ($q) use ($checkin, $checkout) {
+            $q->where(function ($query) use ($checkin, $checkout) {
+                $query->whereBetween('check_in', [$checkin, $checkout->copy()->subDay()])
+                    ->orWhereBetween('check_out', [$checkin->copy()->addDay(), $checkout])
+                    ->orWhere(function ($q2) use ($checkin, $checkout) {
+                        $q2->where('check_in', '<=', $checkin)
+                            ->where('check_out', '>=', $checkout);
+                    });
+            })->whereNotIn('status', ['cancelled']);
+        })->get();
+
+        return $availableRooms;
     }
     public static function storeRoomClass(Request $request)
     {
@@ -67,7 +102,7 @@ class RoomService
             'room_class_id' => 'required|exists:room_classes,id',
             'name' => 'required',
             'unit' => 'required|integer|min:1',
-            'capacuty' => 'required|integer|min:1',
+            'capacity' => 'required|integer|min:1',
             'price_day' => 'required|numeric|min:0',
             'description' => 'nullable',
         ]);

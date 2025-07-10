@@ -38,6 +38,7 @@ class ReservationService
             'room_id' => 'required|exists:rooms,id',
             'checkin_date' => 'required|date|after_or_equal:today',
             'checkout_date' => 'required|date|after:checkin_date',
+            'count_rooms' => 'required|integer|min:1',
         ]);
 
         return DB::transaction(function () use ($request, $user) {
@@ -63,6 +64,7 @@ class ReservationService
                 'checkin_date' => $request->checkin_date,
                 'checkout_date' => $request->checkout_date,
                 'status' => 'pending',
+
                 'code' => strtoupper(Str::random(6)),
             ]);
 

@@ -71,12 +71,12 @@ class CheckinService
                 ], 403);
             }
 
-            if (!in_array($reservation->status, [Reservation::PENDING, Reservation::CONFIRMED])) {
+            if ($reservation->status !== Reservation::PAID) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Reservasi tidak dapat di-check-in karena statusnya ' . $reservation->status,
                     'data' => null,
-                    'errors' => 'Reservasi hanya bisa di-check-in jika statusnya Pending atau Confirm'
+                    'errors' => 'Reservasi hanya bisa di-check-in jika sudah Paid'
                 ], 409);
             }
 
@@ -169,9 +169,11 @@ class CheckinService
 
                 // Tambahkan ke total
                 $reservation->amount_price += $extraFee;
+                $reservation->status = Reservation::CHECKED_OUT_OVERDUE;
+            } else {
+                $reservation->status = Reservation::CHECKED_OUT;
             }
 
-            $reservation->status = Reservation::CHECKED_OUT;
             $reservation->save();
 
             // Log aktivitas

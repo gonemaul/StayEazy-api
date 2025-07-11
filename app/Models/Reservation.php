@@ -46,6 +46,18 @@ class Reservation extends Model
         self::CANCELLED
     ];
 
+    public function getStatusLabel()
+    {
+        return match ($this->status) {
+            self::PENDING_PAYMENT => 'Menunggu Pembayaran',
+            self::PAID => 'Sudah Dibayar',
+            self::CHECKED_IN => 'Check-in',
+            self::CHECKED_OUT => 'Selesai',
+            self::CHECKED_OUT_OVERDUE => 'Telat Check-out',
+            self::CANCELLED => 'Dibatalkan',
+            default => ucfirst(str_replace('_', ' ', $this->status)),
+        };
+    }
     public function user()
     {
         return $this->belongsTo(User::class);

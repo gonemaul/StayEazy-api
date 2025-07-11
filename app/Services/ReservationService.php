@@ -8,6 +8,7 @@ use App\Models\RoomUnit;
 use App\Models\Reservation;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\ReservationLog;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -49,7 +50,7 @@ class ReservationService
     {
         try {
             $res = Reservation::with(['roomUnit.roomClass'])->findOrFail($id);
-            if ($res->user_id !== auth()->id()) {
+            if ($res->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda tidak diizinkan melihat reservasi ini.',
@@ -95,10 +96,10 @@ class ReservationService
         DB::beginTransaction();
 
         try {
-            $userId = auth()->id();
+            $userId = Auth::id();
             // Ambil unit kamar dari class
             $units = RoomUnit::with('roomClass')->where('room_class_id', $request->room_class_id)
-                ->where('status', 'available')
+                ->where('status', RoomUnit::AVAILABLE)
                 ->get();
 
             // Filter unit yang tidak bentrok dengan booking lain
@@ -134,6 +135,7 @@ class ReservationService
             foreach ($availableUnits as $unit) {
                 $pricePerNight = $unit->roomClass->price;
                 $amount = $nights * $pricePerNight;
+
                 $code = 'RS-' . Carbon::now()->format('dm') . // e.g., 1007
                     '-U' . $userId .
                     'H' . $unit->roomClass->hotel_id .
@@ -141,7 +143,7 @@ class ReservationService
                     'R' . $unit->id .
                     '-' . strtoupper(Str::random(4));
 
-                $created[] = Reservation::create([
+                $reservation = Reservation::create([
                     'user_id' => $userId,
                     'room_unit_id' => $unit->id,
                     'checkin_date' => $checkin,
@@ -149,15 +151,28 @@ class ReservationService
                     'guest_count' => $request->guest_count ?? 1,
                     'amount_price' => $amount,
                     'code_reservation' => $code,
-                    'status' => Reservation::PENDING
+                    'status' => Reservation::PENDING_PAYMENT
                 ]);
+
+                $token = MidtransService::createSnapToken($reservation);
+                $reservation->update(['payment_token' => $token]);
+
+                ReservationLog::create([
+                    'reservation_id' => $reservation->id,
+                    'performed_by' => $userId,
+                    'action' => ReservationLog::ACTION_CREATE,
+                    'note' => 'User melakukan reservasi.',
+                    'performed_at' => now(),
+                ]);
+
+                $created[] = $reservation;
             }
 
             DB::commit();
 
             return response()->json([
                 'success' => true,
-                'message' => 'Reservasi berhasil dibuat.',
+                'message' => 'Reservasi berhasil dibuat, silahkan lanjutkan pembayaran',
                 'data' => ReservationResource::collection($created),
                 'errors' => null
             ], 201);
@@ -211,7 +226,7 @@ class ReservationService
 
     public static function cancelReservation($reservation)
     {
-        if ($reservation->user_id !== auth()->id()) {
+        if ($reservation->user_id !== Auth::id()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Kamu tidak diizinkan membatalkan reservasi ini.',

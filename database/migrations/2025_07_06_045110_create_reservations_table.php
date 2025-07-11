@@ -11,13 +11,16 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('room_unit_id')->constrained()->onDelete('cascade');
+
             $table->dateTime('checkin_date');
             $table->dateTime('checkout_date');
+
             $table->integer('guest_count')->default(1);;
-            $table->string('code_reservation')->unique();
+
             $table->decimal('amount_price', 12, 2);
-            $table->decimal('paid_amount', 12, 2);
-            $table->string('status')->default('pending');
+            $table->decimal('late_fee', 12, 2)->nullable();
+            $table->string('status');
+            $table->string('code_reservation')->unique();
             $table->string('payment_token')->nullable();
             $table->timestamps();
         });

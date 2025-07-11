@@ -20,6 +20,8 @@ Route::controller(PublicController::class)->group(function () {
     Route::get('/cities', 'listCity');
     Route::post('/rooms/availability',  'roomAvailable');
 });
+Route::post('/midtrans/callback', [\App\Http\Controllers\Api\MidtransController::class, 'handleCallback'])->name('midtrans.callback');
+
 
 // Auth Route
 Route::middleware('auth:sanctum')->group(function () {

@@ -298,7 +298,7 @@ class ReservationService
     {
         try {
             $staff = Auth::user();
-            $res = Reservation::whereHas('roomUnit', function ($q) use ($staff) {
+            $res = Reservation::whereHas('roomUnit.roomClass', function ($q) use ($staff) {
                 $q->where('hotel_id', $staff->hotel_id);
             })->with(['roomUnit', 'user'])->get();
 

@@ -18,7 +18,7 @@ class CheckinService
     {
         $validatedData = Validator::make($request->all(), [
             'code_reservation' => 'required|string|exists:reservations,code_reservation',
-            'guest_email' => 'required|email|exist:users,email',
+            'guest_email' => 'required|email|exists:users,email',
             'guest_name' => 'required|string',
         ]);
 

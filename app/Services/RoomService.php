@@ -164,7 +164,6 @@ class RoomService
         $validatedData = Validator::make($request->all(), [
             'room_class_id' => 'required|exists:room_classes,id',
             'room_number' => 'required|unique:room_units,room_number',
-            'status' => ['required', Rule::in(RoomUnit::STATUSES)],
         ]);
 
         if ($validatedData->fails()) {
@@ -178,7 +177,11 @@ class RoomService
 
         DB::beginTransaction();
         try {
-            $room = RoomUnit::create($validatedData->validated());
+            $room = RoomUnit::create([
+                'room_class_id' => $request->room_class_id,
+                'room_number' => $request->room_number,
+                'status' => RoomUnit::AVAILABLE
+            ]);
             DB::commit();
             return response()->json([
                 'success' => true,

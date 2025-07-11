@@ -15,7 +15,7 @@ class StaffService
             'name' => 'required|string|max:100',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|confirmed|min:6',
-            'hotel_id' => 'required|exist:hotels,id'
+            'hotel_id' => 'required|exists:hotels,id'
         ]);
 
         if ($validatedData->fails()) {

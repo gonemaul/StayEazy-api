@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use Midtrans\Config;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -9,6 +10,12 @@ use App\Http\Controllers\Controller;
 
 class MidtransController extends Controller
 {
+    public function __construct()
+    {
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+    }
+
     public function handleCallback(Request $request)
     {
         // Log callback untuk debug

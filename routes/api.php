@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Staff Only
     Route::middleware('is_staff')->controller(StaffController::class)->prefix('staff')->group(function () {
         Route::prefix('reservations')->group(function () {
-            Route::get('/', 'staffReservation');
+            Route::get('/', 'reservations');
             Route::post('checkin',  'checkin');
             Route::post('checkout', 'checkout');
         });

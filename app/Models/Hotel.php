@@ -16,8 +16,13 @@ class Hotel extends Model
         return $this->belongsTo(City::class);
     }
 
-    public function rooms()
+    public function roomClasses()
     {
-        return $this->hasMany(RoomUnit::class);
+        return $this->hasMany(RoomClass::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 }

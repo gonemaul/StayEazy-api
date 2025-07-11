@@ -17,8 +17,13 @@ class RoomClass extends Model
         'description'
     ];
 
-    public function rooms()
+    public function roomUnits()
     {
         return $this->hasMany(RoomUnit::class);
+    }
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
     }
 }

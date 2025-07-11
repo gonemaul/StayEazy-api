@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Models\City;
 use App\Models\Room;
+use App\Models\User;
 use App\Models\Hotel;
+use App\Models\RoomUnit;
 use App\Models\RoomClass;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -33,9 +35,9 @@ class AdminController extends Controller
         return HotelService::store($request);
     }
 
-    public function updateHotel(Request $request, $id)
+    public function updateHotel(Request $request, Hotel $hotel)
     {
-        return HotelService::update($request, $id);
+        return HotelService::update($request, $hotel);
     }
 
     public function storeRoomClass(Request $request)
@@ -43,9 +45,9 @@ class AdminController extends Controller
         return RoomService::storeRoomClass($request);
     }
 
-    public function updateRoomClass(Request $request)
+    public function updateRoomClass(Request $request, RoomClass $roomClass)
     {
-        return RoomService::updateRoomClass($request);
+        return RoomService::updateRoomClass($request, $roomClass);
     }
 
     public function storeRoom(Request $request)
@@ -53,22 +55,22 @@ class AdminController extends Controller
         return RoomService::storeRoom($request);
     }
 
-    public function updateRoom(Request $request)
+    public function updateRoom(Request $request, RoomUnit $roomUnit)
     {
-        return RoomService::updateRoom($request);
+        return RoomService::updateRoom($request, $roomUnit);
     }
 
     public function createStaff(Request $request)
     {
         return StaffService::create($request);
     }
-    public function updateStaff(Request $request, $id)
+    public function updateStaff(Request $request, User $staff)
     {
-        return StaffService::update($request, $id);
+        return StaffService::update($request, $staff);
     }
-    public function deleteStaff(Request $request, $id)
+    public function deleteStaff(Request $request, User $staff)
     {
-        return StaffService::delete($request, $id);
+        return StaffService::delete($request, $staff);
     }
 
     public function notifications(Request $request)
@@ -81,8 +83,8 @@ class AdminController extends Controller
         return ReservationService::listAllReservations();
     }
 
-    public function updateReservationStatus(Request $request, $id)
+    public function updateReservationStatus(Request $request, Reservation $reservation)
     {
-        return ReservationService::updateReservationStatus($id, $request->status);
+        return ReservationService::updateReservationStatus($request, $reservation);
     }
 }

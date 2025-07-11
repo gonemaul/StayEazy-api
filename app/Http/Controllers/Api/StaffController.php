@@ -11,21 +11,16 @@ class StaffController extends Controller
 {
     public function reservations()
     {
-        return ReservationService::listStaffReservations(auth()->user());
+        return ReservationService::listStaffReservations();
     }
 
-    public function start(Request $request)
+    public function checkin(Request $request)
     {
-        return CheckinService::startCheckin($request, auth()->user());
-    }
-
-    public function confirm(Request $request)
-    {
-        return CheckinService::verifyCheckinCode($request, auth()->user());
+        return CheckinService::startCheckin($request);
     }
 
     public function checkout(Request $request)
     {
-        return CheckinService::checkout($request, auth()->user());
+        return CheckinService::checkout($request);
     }
 }

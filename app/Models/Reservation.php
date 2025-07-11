@@ -22,21 +22,27 @@ class Reservation extends Model
     ];
 
     protected $casts = [
-        'checkin_date' => 'date',
-        'checkout_date' => 'date',
+        'checkin_date' => 'datetime',
+        'checkout_date' => 'datetime',
     ];
 
-    const PENDING = 'pending';
-    const CONFIRMED = 'confirmed';
+    const PENDING_PAYMENT = 'pending_payment';
+    const PAYMENT_EXPIRED = 'payment_expired';
+    const PAID = 'paid';
     const CHECKED_IN = 'checked_in';
     const CHECKED_OUT = 'checked_out';
+    const CHECKED_OUT_OVERDUE = 'checked_out_overdue';
+    const PARTIAL_PAID = 'partial_paid';
     const CANCELLED = 'cancelled';
 
     const STATUSES = [
-        self::PENDING,
-        self::CONFIRMED,
+        self::PENDING_PAYMENT,
+        self::PAYMENT_EXPIRED,
+        self::PAID,
         self::CHECKED_IN,
         self::CHECKED_OUT,
+        self::CHECKED_OUT_OVERDUE,
+        self::PARTIAL_PAID,
         self::CANCELLED
     ];
 
@@ -48,5 +54,10 @@ class Reservation extends Model
     public function roomUnit()
     {
         return $this->belongsTo(RoomUnit::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(ReservationLog::class);
     }
 }

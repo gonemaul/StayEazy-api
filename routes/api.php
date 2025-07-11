@@ -14,10 +14,10 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::controller(PublicController::class)->group(function () {
     Route::prefix('hotels')->group(function () {
         Route::get('/', 'listHotel');
-        Route::get('/{id}/rooms', 'roomsByHotel');
-        Route::get('/{id}/rooms/{rid}', 'roomDetail');
+        Route::get('/{hotel}/room-classes', 'roomsByHotel');
+        Route::get('/{hotel}/room-classes/{roomClass}', 'roomDetail');
     });
-
+    Route::get('/cities', 'listCity');
     Route::post('/rooms/availability',  'roomAvailable');
 });
 
@@ -28,25 +28,21 @@ Route::middleware('auth:sanctum')->group(function () {
     // User Only
     Route::controller(UserController::class)->group(function () {
         Route::prefix('reservations')->group(function () {
-            // daftar my reservasi
             Route::get('/',  'index');
-            // detail reservasi + status
             Route::get('/{id}',  'show');
-            // buat reservasi
             Route::post('/create',  'create');
-            // cancel reservasi
-            Route::post('/{id}/cancel');
+            Route::post('/{reservation}/cancel', 'cancel');
         });
-        // get notifikasi
         Route::get('notifications');
     });
 
     // Staff Only
     Route::middleware('is_staff')->controller(StaffController::class)->prefix('staff')->group(function () {
-        Route::get('reservations');
-        Route::post('checkin',  'start');
-        Route::post('checkin/verify',  'confirm');
-        Route::post('checkout');
+        Route::prefix('reservations')->group(function () {
+            Route::get('/', 'staffReservation');
+            Route::post('checkin',  'checkin');
+            Route::post('checkout', 'checkout');
+        });
     });
 
     // Admin Only
@@ -56,21 +52,23 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::prefix('hotels')->group(function () {
             Route::post('/', 'storeHotel');
-            Route::put('{id}/update', 'updateHotel');
+            Route::put('{hotel}/update', 'updateHotel');
         });
-        Route::prefix('rooms')->group(function () {
-            Route::post('room-classes', 'storeRoomClass');
-            Route::put('room-classes', 'updateRoomClass');
+        Route::prefix('room-classes')->group(function () {
+            Route::post('/create', 'storeRoomClass');
+            Route::put('/{roomClass}/update', 'updateRoomClass');
+        });
+        Route::prefix('room')->group(function () {
             Route::post('/create', 'storeRoom');
-            Route::put('/{$id}/update', 'updateRoom');
+            Route::put('/{roomUnit}/update', 'updateRoom');
         });
         Route::prefix('staff')->group(function () {
             Route::post('create', 'createStaff');
-            Route::put('{id}/update', 'updateStaff');
-            Route::delete('{id}/delete', 'deleteStaff');
+            Route::put('{staff}/update', 'updateStaff');
+            Route::delete('{staff}/delete', 'deleteStaff');
         });
         Route::post('notifications', 'notifications');
         Route::get('reservations', 'allReservations');
-        Route::put('reservations/{id}', 'updateReservationStatus');
+        Route::put('reservations/{reservation}', 'updateReservationStatus');
     });
 });

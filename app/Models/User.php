@@ -22,7 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'hotel_id'
     ];
 
     /**
@@ -60,5 +61,15 @@ class User extends Authenticatable
     public function reservations()
     {
         return $this->hasMany(\App\Models\Reservation::class);
+    }
+
+    public function hotel()
+    {
+        return $this->belongsTo(Hotel::class);
+    }
+
+    public function logs()
+    {
+        return $this->hasMany(ReservationLog::class);
     }
 }

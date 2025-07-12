@@ -17,7 +17,7 @@ class RoomClassResource extends JsonResource
         return [
             'id'        => $this->id,
             'name'      => $this->name,
-            'price'     => $this->price,
+            'price'     => 'Rp ' . number_format($this->price, 0, ',', '.'),
             'capacity'  => $this->capacity,
             'hotel_id'  => $this->hotel_id,
         ];

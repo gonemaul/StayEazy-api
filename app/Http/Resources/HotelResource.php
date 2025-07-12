@@ -15,10 +15,10 @@ class HotelResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'   => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
-            'city' => new CityResource($this->whenLoaded('city')),
+            'id'            => $this->id,
+            'name'          => $this->name,
+            'description'   => $this->description,
+            'city'          => new CityResource($this->whenLoaded('city')),
         ];
     }
 }

@@ -71,6 +71,5 @@ Route::middleware('auth:sanctum')->group(function () {
         });
         Route::post('notifications', 'notifications');
         Route::get('reservations', 'allReservations');
-        Route::put('reservations/{reservation}', 'updateReservationStatus');
     });
 });

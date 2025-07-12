@@ -1,0 +1,47 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/staff/reservations",
+    "title": "Reservasi Masuk",
+    "description": "Menampilkan reservasi yang perlu diproses oleh staf hotel.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Daftar reservasi untuk hotel berhasil diambil",
+      "data": [],
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/staff/reservations/checkin",
+    "title": "Check-in Tamu",
+    "description": "Melakukan proses check-in berdasarkan kode reservasi.",
+    "request": {
+      "code_reservation": "RS-1007-U5H1-C1R3-XZLK",
+      "guest_email": "guest@email.com",
+      "guest_name": "John Doe"
+    },
+    "response": {
+      "success": true,
+      "message": "Check-in berhasil diproses",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/staff/reservations/checkout",
+    "title": "Check-out Tamu",
+    "description": "Melakukan proses check-out dan perhitungan biaya tambahan jika terlambat.",
+    "request": {
+      "code_reservation": "RS-1007-U5H1-C1R3-XZLK"
+    },
+    "response": {
+      "success": true,
+      "message": "Check-out berhasil diproses",
+      "data": {},
+      "errors": null
+    }
+  }
+]

@@ -1,0 +1,88 @@
+[
+  {
+    "method": "POST",
+    "path": "/api/admin/hotels",
+    "title": "Tambah Hotel",
+    "description": "Menambahkan data hotel baru.",
+    "request": {
+      "name": "Hotel A",
+      "city_id": 1,
+      "address": "Jl. Mawar 123",
+      "description": "Dekat pusat kota"
+    },
+    "response": {
+      "success": true,
+      "message": "Hotel berhasil ditambahkan",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/admin/hotels/{hotel}/update",
+    "title": "Update Hotel",
+    "description": "Memperbarui data hotel.",
+    "request": {
+      "name": "Hotel B",
+      "address": "Jl. Melati 456"
+    },
+    "response": {
+      "success": true,
+      "message": "Hotel berhasil diperbarui",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/room-classes/create",
+    "title": "Tambah Room Class",
+    "description": "Menambahkan kelas kamar baru.",
+    "request": {
+      "hotel_id": 1,
+      "name": "Deluxe",
+      "price": 600000
+    },
+    "response": {
+      "success": true,
+      "message": "Kelas kamar berhasil ditambahkan",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/room/create",
+    "title": "Tambah Room Unit",
+    "description": "Menambahkan unit kamar berdasarkan kelas kamar.",
+    "request": {
+      "room_class_id": 1,
+      "room_number": "DR160",
+      "status": "available"
+    },
+    "response": {
+      "success": true,
+      "message": "Room unit berhasil ditambahkan",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/staff/create",
+    "title": "Tambah Staff",
+    "description": "Menambahkan user dengan role staff.",
+    "request": {
+      "name": "Jane Staff",
+      "email": "jane@hotel.com",
+      "password": "secret123",
+      "hotel_id": 1
+    },
+    "response": {
+      "success": true,
+      "message": "Staff berhasil ditambahkan",
+      "data": {},
+      "errors": null
+    }
+  }
+]

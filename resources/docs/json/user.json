@@ -1,0 +1,72 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/reservations",
+    "title": "List Reservasi",
+    "description": "Menampilkan semua reservasi user yang sedang login.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Daftar reservasi berhasil diambil",
+      "data": [],
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/reservations/{id}",
+    "title": "Detail Reservasi",
+    "description": "Menampilkan detail reservasi berdasarkan ID.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Detail reservasi berhasil diambil",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/reservations/create",
+    "title": "Buat Reservasi",
+    "description": "Membuat reservasi baru untuk kamar tertentu.",
+    "request": {
+      "room_class_id": 1,
+      "checkin_date": "2025-07-15",
+      "checkout_date": "2025-07-17",
+      "guest_count": 2
+    },
+    "response": {
+      "success": true,
+      "message": "Reservasi berhasil dibuat",
+      "data": [],
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/reservations/{reservation}/cancel",
+    "title": "Batalkan Reservasi",
+    "description": "Membatalkan reservasi yang masih dalam status pending.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Reservasi berhasil dibatalkan",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/notifications",
+    "title": "Notifikasi",
+    "description": "Menampilkan daftar notifikasi user.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Notifikasi berhasil diambil",
+      "data": [],
+      "errors": null
+    }
+  }
+]

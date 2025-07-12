@@ -1,0 +1,86 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/hotels",
+    "title": "Daftar Hotel",
+    "description": "Menampilkan semua hotel yang tersedia.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Daftar hotel berhasil diambil",
+      "data": [
+        {
+          "id": 1,
+          "name": "Hotel A",
+          "city": "Jakarta",
+          "address": "Jl. Mawar 123"
+        }
+      ],
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/{id_hotels}/room-classes",
+    "title": "Daftar Kelas Kamar",
+    "description": "Menampilkan semua kelas kamar dari hotel tertentu.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Daftar hotel berhasil diambil",
+      "data": [
+        {
+          "id": 1,
+          "name": "Hotel A",
+          "city": "Jakarta",
+          "address": "Jl. Mawar 123"
+        }
+      ],
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/hotels",
+    "title": "Detail Kelas Kamar",
+    "description": "Menampilkan detail kelas kamar.",
+    "request": null,
+    "response": {
+      "success": true,
+      "message": "Daftar hotel berhasil diambil",
+      "data": [
+        {
+          "id": 1,
+          "name": "Hotel A",
+          "city": "Jakarta",
+          "address": "Jl. Mawar 123"
+        }
+      ],
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/rooms/availability",
+    "title": "Cek Ketersediaan Kamar",
+    "description": "Cek unit kamar yang tersedia berdasarkan room class dan tanggal.",
+    "request": {
+      "room_class_id": 1,
+      "checkin_date": "2025-07-15",
+      "checkout_date": "2025-07-17",
+      "guest_count": 2
+    },
+    "response": {
+      "success": true,
+      "message": "Ketersediaan kamar berhasil diambil",
+      "data": [
+        {
+          "unit_id": 11,
+          "room_number": "DR160",
+          "price_per_night": 500000
+        }
+      ],
+      "errors": null
+    }
+  }
+]

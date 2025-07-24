@@ -65,6 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
             Route::put('/{roomUnit}/update', 'updateRoom');
         });
         Route::prefix('staff')->group(function () {
+            Route::get('/', 'listStaff');
             Route::post('create', 'createStaff');
             Route::put('{staff}/update', 'updateStaff');
             Route::delete('{staff}/delete', 'deleteStaff');

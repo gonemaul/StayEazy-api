@@ -47,7 +47,7 @@ class CheckinService
             if ($now->lt($checkinTime->setTime(13, 0))) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Check-in hanya bisa dilakukan setelah jam 13:00',
+                    'message' => 'Check-in hanya bisa dilakukan setelah jam 13:00.',
                     'data' => null,
                     'errors' => 'Minimal check-in jam 13.00 WIB.'
                 ], 409);

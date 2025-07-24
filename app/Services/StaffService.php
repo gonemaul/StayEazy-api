@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\StaffResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +10,34 @@ use Illuminate\Support\Facades\Validator;
 
 class StaffService
 {
+    public static function listStaffs()
+    {
+        try {
+            $staffs = User::with('hotel')->where('role', User::ROLE_STAFF)->get();
+            if ($staffs->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data staff masih kosong.',
+                    'data' => [],
+                    'errors' => null
+                ], 200);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Data staff berhasil diambil',
+                'data' => StaffResource::collection($staffs),
+                'errors' => null
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil data kota',
+                'data' => null,
+                'errors' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public static function create(Request $request)
     {
         $validatedData = Validator::make($request->all(), [
@@ -61,7 +90,7 @@ class StaffService
             ], 500);
         }
     }
-    public static function update(Request $request, $id)
+    public static function update(Request $request, $staffId)
     {
         $request->validate([
             'name' => 'required|string|max:100',
@@ -72,7 +101,7 @@ class StaffService
 
         DB::beginTransaction();
         try {
-            $staff = User::where('role', 'staff')->findOrFail($id);
+            $staff = User::where('role', User::ROLE_STAFF)->findOrFail($staffId);
             $staff->update($request->only(['name', 'email', 'hotel_id']));
             DB::commit();
             return response()->json([
@@ -99,11 +128,11 @@ class StaffService
             ], 500);
         }
     }
-    public static function delete(Request $request, $id)
+    public static function delete(Request $request, $staffId)
     {
         DB::beginTransaction();
         try {
-            User::where('role', 'staff')->findOrFail($id)->delete();
+            User::where('role', User::ROLE_STAFF)->findOrFail($staffId)->delete();
             DB::commit();
             return response()->json([
                 'success' => true,

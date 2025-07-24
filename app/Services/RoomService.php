@@ -20,7 +20,7 @@ class RoomService
     {
         $validatedData = Validator::make($request->all(), [
             'room_class_id' => 'required|exists:room_classes,id',
-            'checkin_date' => 'required|date',
+            'checkin_date' => 'required|date|after_or_equal:today',
             'checkout_date' => 'required|date|after:checkin_date',
             'quantity' => 'required|integer|min:1',
         ]);
@@ -34,6 +34,15 @@ class RoomService
             ], 422);
         }
 
+        $checkinDate = Carbon::parse($request->checkin_date);
+        $now = now();
+        $cutoffTime = Carbon::today()->setTime(11, 0);
+        if ($checkinDate->isToday() && $now->gt($cutoffTime)) {
+            return response()->json([
+                'message' => 'Reservasi untuk hari ini hanya bisa dilakukan sebelum jam 11:00.',
+            ], 403);
+        }
+
         try {
             $units = RoomUnit::with('reservations')
                 ->where('room_class_id', $request->room_class_id)
@@ -41,16 +50,18 @@ class RoomService
                 ->get();
 
             $available = $units->filter(function ($unit) use ($request) {
-                return !$unit->reservations()->where(function ($query) use ($request) {
-                    $query->where(function ($q) use ($request) {
-                        $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
-                            ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
-                            ->orWhere(function ($q) use ($request) {
-                                $q->where('checkin_date', '<=', $request->checkin_date)
-                                    ->where('checkout_date', '>=', $request->checkout_date);
-                            });
-                    });
-                })->exists();
+                return !$unit->reservations()
+                    ->where('status', '!=', Reservation::CANCELLED) // hanya cek yang aktif
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($q) use ($request) {
+                            $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
+                                ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
+                                ->orWhere(function ($q) use ($request) {
+                                    $q->where('checkin_date', '<=', $request->checkin_date)
+                                        ->where('checkout_date', '>=', $request->checkout_date);
+                                });
+                        });
+                    })->exists();
             })->take($request->quantity)->values();
 
             if ($available->count() < $request->quantity) {

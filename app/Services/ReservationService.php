@@ -93,6 +93,16 @@ class ReservationService
             ], 422);
         }
 
+        $checkinDate = Carbon::parse($request->checkin_date);
+        $now = now();
+        $cutoffTime = Carbon::today()->setTime(11, 0);
+
+        if ($checkinDate->isToday() && $now->gt($cutoffTime)) {
+            return response()->json([
+                'message' => 'Tidak bisa membuat reservasi untuk hari ini setelah jam 11:00.',
+            ], 403);
+        }
+
         DB::beginTransaction();
 
         try {
@@ -104,16 +114,18 @@ class ReservationService
 
             // Filter unit yang tidak bentrok dengan booking lain
             $availableUnits = $units->filter(function ($unit) use ($request) {
-                return !$unit->reservations()->where(function ($query) use ($request) {
-                    $query->where(function ($q) use ($request) {
-                        $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
-                            ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
-                            ->orWhere(function ($q) use ($request) {
-                                $q->where('checkin_date', '<=', $request->checkin_date)
-                                    ->where('checkout_date', '>=', $request->checkout_date);
-                            });
-                    });
-                })->exists();
+                return !$unit->reservations()
+                    ->where('status', '!=', Reservation::CANCELLED) // hanya cek yang aktif
+                    ->where(function ($query) use ($request) {
+                        $query->where(function ($q) use ($request) {
+                            $q->whereBetween('checkin_date', [$request->checkin_date, $request->checkout_date])
+                                ->orWhereBetween('checkout_date', [$request->checkin_date, $request->checkout_date])
+                                ->orWhere(function ($q) use ($request) {
+                                    $q->where('checkin_date', '<=', $request->checkin_date)
+                                        ->where('checkout_date', '>=', $request->checkout_date);
+                                });
+                        });
+                    })->exists();
             })->take($request->quantity);
 
             if ($availableUnits->count() < $request->quantity) {
@@ -130,7 +142,7 @@ class ReservationService
             $created = [];
             $checkin = Carbon::parse($request->checkin_date)->setTime(13, 0);  // jam 13:00
             $checkout = Carbon::parse($request->checkout_date)->setTime(12, 0); // jam 12:00
-            $nights = $checkin->diffInDays($checkout); // jumlah malam
+            $nights = ceil($checkin->diffInHours($checkout) / 24); // jumlah malam
 
             foreach ($availableUnits as $unit) {
                 $pricePerNight = $unit->roomClass->price;
@@ -235,10 +247,10 @@ class ReservationService
             ], 403);
         }
 
-        if ($reservation->status !== Reservation::PENDING) {
+        if ($reservation->status !== Reservation::PENDING_PAYMENT) {
             return response()->json([
                 'success' => false,
-                'message' => 'Reservasi tidak bisa dibatalkan karena status saat ini bukan pending.',
+                'message' => 'Reservasi hanya bisa dibatalkan jika status saat ini masih pending.',
                 'data' => [],
                 'errors' => null
             ], 409);

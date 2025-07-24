@@ -60,15 +60,20 @@ class AdminController extends Controller
         return RoomService::updateRoom($request, $roomUnit);
     }
 
+    public function listStaff(Request $request)
+    {
+        return StaffService::listStaffs();
+    }
+
     public function createStaff(Request $request)
     {
         return StaffService::create($request);
     }
-    public function updateStaff(Request $request, User $staff)
+    public function updateStaff(Request $request, $staff)
     {
         return StaffService::update($request, $staff);
     }
-    public function deleteStaff(Request $request, User $staff)
+    public function deleteStaff(Request $request, $staff)
     {
         return StaffService::delete($request, $staff);
     }

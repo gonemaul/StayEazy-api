@@ -23,6 +23,7 @@ class ReservationResource extends JsonResource
             'status'                => $this->status,
             'code_reservation'      => $this->code_reservation,
             'payment_token'         => $this->payment_token,
+            'link_payment'          => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/' . $this->payment_token
         ];
     }
 }

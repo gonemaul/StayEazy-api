@@ -8,7 +8,9 @@
     <div class="bg-white border-1 border-gray-100 p-6 rounded-xl shadow mb-10">
         <h2 class="text-2xl font-bold text-blue-800 mb-2">📌 Tentang Proyek Ini</h2>
         <p class="text-gray-700 text-sm leading-relaxed mb-2">
-            <strong>StayEazy API</strong> adalah proyek backend untuk sistem reservasi hotel yang dirancang sebagai bagian dari portfolio pengembang. Tujuan utamanya adalah untuk mendemonstrasikan praktik pengembangan API yang modern dan terstruktur dengan baik, menggunakan Laravel sebagai kerangka kerja utama.
+            <strong>StayEazy API</strong> adalah proyek backend untuk sistem reservasi hotel yang dirancang sebagai bagian
+            dari portfolio pengembang. Tujuan utamanya adalah untuk mendemonstrasikan praktik pengembangan API yang modern
+            dan terstruktur dengan baik, menggunakan Laravel sebagai kerangka kerja utama.
         </p>
         <ul class="list-disc list-inside text-gray-700 text-sm mb-2">
             <li>Autentikasi dengan Laravel Sanctum</li>
@@ -18,9 +20,13 @@
             <li>Webhook dan notifikasi dasar</li>
         </ul>
         <div class="mt-4">
-            🔗 <span class="text-sm text-gray-800">Lihat dan uji API menggunakan Postman:</span><br>
-            <a href="https://documenter.getpostman.com/view/32145189/2sB34cqiBV" target="_blank" class="text-blue-600 underline text-sm hover:text-blue-800">
-                https://documenter.getpostman.com/view/32145189/2sB34cqiBV
+            <a href="https://documenter.getpostman.com/view/32145189/2sB34cqiBV" target="_blank"
+                class="text-blue-600 underline text-sm hover:text-blue-800">
+                🔗 <span class="text-sm text-gray-800">Github</span><br>
+            </a>
+            <a href="https://documenter.getpostman.com/view/32145189/2sB34cqiBV" target="_blank"
+                class="text-blue-600 underline text-sm hover:text-blue-800">
+                🔗 <span class="text-sm text-gray-800">Postman</span><br>
             </a>
         </div>
     </div>
@@ -82,7 +88,7 @@
     <div class="bg-yellow-50 p-6 rounded-xl shadow mb-12">
         <h2 class="text-2xl font-bold text-yellow-800 mb-2">⚙️ Response Format</h2>
         <p class="text-sm text-gray-700 mb-2">Semua response mengikuti format standar JSON seperti berikut:</p>
-<pre class="bg-white border p-4 rounded text-sm overflow-x-auto">{
+        <pre class="bg-white border p-4 rounded text-sm overflow-x-auto">{
   "success": true,
   "message": "Deskripsi sukses atau gagal",
   "data": {...},

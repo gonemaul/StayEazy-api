@@ -79,6 +79,7 @@
         @yield('content')
     @endif
     {{-- Toggle Script --}}
+    @stack('script')
 </body>
 
 </html>

@@ -5,6 +5,7 @@ namespace App\Services;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\RoomUnit;
+use App\Models\RoomClass;
 use App\Models\Reservation;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -99,8 +100,27 @@ class ReservationService
 
         if ($checkinDate->isToday() && $now->gt($cutoffTime)) {
             return response()->json([
-                'message' => 'Tidak bisa membuat reservasi untuk hari ini setelah jam 11:00.',
-            ], 403);
+                'success' => false,
+                'message' => "Tidak bisa membuat reservasi untuk hari ini",
+                'data' => [],
+                'errors' => [
+                    'check_in_date' => ['Reservasi untuk hari ini hanya diperbolehkan sebelum pukul 11:00.']
+                ]
+            ], 422);
+        }
+
+        $roomClass = RoomClass::findOrFail($request->room_class_id);
+        $maxGuests = $roomClass->capacity * $request->quantity;
+
+        if ($request->guest_count > $maxGuests) {
+            return response()->json([
+                'success' => false,
+                'message' => "Jumlah tamu melebihi kapasitas maksimum.",
+                'data' => [],
+                'errors' => [
+                    'guest_count' => ["Maksimum tamu untuk {$request->quantity} unit adalah $maxGuests orang."]
+                ]
+            ], 422);
         }
 
         DB::beginTransaction();

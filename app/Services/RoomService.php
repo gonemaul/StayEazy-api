@@ -39,8 +39,13 @@ class RoomService
         $cutoffTime = Carbon::today()->setTime(11, 0);
         if ($checkinDate->isToday() && $now->gt($cutoffTime)) {
             return response()->json([
-                'message' => 'Reservasi untuk hari ini hanya bisa dilakukan sebelum jam 11:00.',
-            ], 403);
+                'success' => false,
+                'message' => "Tidak bisa membuat reservasi untuk hari ini",
+                'data' => [],
+                'errors' => [
+                    'check_in_date' => ['Reservasi untuk hari ini hanya diperbolehkan sebelum pukul 11:00.']
+                ]
+            ], 422);
         }
 
         try {

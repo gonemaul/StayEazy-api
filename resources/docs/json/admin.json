@@ -1,5 +1,31 @@
 [
   {
+    "method": "GET",
+    "path": "/api/admin/cities",
+    "title": "Daftar Kota",
+    "description": "Mengambil daftar semua kota.",
+    "request": {},
+    "response": {
+        "success": true,
+        "message": "Data kota berhasil diambil",
+        "data": [
+            {
+                "id": 1,
+                "name": "Jakarta"
+            },
+            {
+                "id": 2,
+                "name": "Bandung"
+            },
+            {
+                "id": 3,
+                "name": "Yogyakarta"
+            }
+        ],
+        "errors": null
+    }
+  },
+  {
     "method": "POST",
     "path": "/api/admin/hotels",
     "title": "Tambah Hotel",
@@ -20,11 +46,13 @@
   {
     "method": "PUT",
     "path": "/api/admin/hotels/{hotel}/update",
-    "title": "Update Hotel",
-    "description": "Memperbarui data hotel.",
+    "title": "Ubah Hotel",
+    "description": "Mengubah data hotel berdasarkan ID.",
     "request": {
-      "name": "Hotel B",
-      "address": "Jl. Melati 456"
+      "name": "Hotel A Baru",
+      "city_id": 1,
+      "address": "Jl. Melati 456",
+      "description": "Dekat bandara"
     },
     "response": {
       "success": true,
@@ -36,12 +64,11 @@
   {
     "method": "POST",
     "path": "/api/admin/room-classes/create",
-    "title": "Tambah Room Class",
+    "title": "Tambah Kelas Kamar",
     "description": "Menambahkan kelas kamar baru.",
     "request": {
-      "hotel_id": 1,
       "name": "Deluxe",
-      "price": 600000
+      "description": "Kamar dengan fasilitas mewah"
     },
     "response": {
       "success": true,
@@ -51,19 +78,64 @@
     }
   },
   {
-    "method": "POST",
-    "path": "/api/admin/room/create",
-    "title": "Tambah Room Unit",
-    "description": "Menambahkan unit kamar berdasarkan kelas kamar.",
+    "method": "PUT",
+    "path": "/api/admin/room-classes/{roomClass}/update",
+    "title": "Ubah Kelas Kamar",
+    "description": "Mengubah data kelas kamar berdasarkan ID.",
     "request": {
-      "room_class_id": 1,
-      "room_number": "DR160",
-      "status": "available"
+      "name": "Deluxe Plus",
+      "description": "Kamar dengan tambahan fasilitas"
     },
     "response": {
       "success": true,
-      "message": "Room unit berhasil ditambahkan",
+      "message": "Kelas kamar berhasil diperbarui",
       "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/room/create",
+    "title": "Tambah Kamar",
+    "description": "Menambahkan unit kamar baru.",
+    "request": {
+      "room_class_id": 1,
+      "hotel_id": 2,
+      "number": "101"
+    },
+    "response": {
+      "success": true,
+      "message": "Kamar berhasil ditambahkan",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/admin/room/{roomUnit}/update",
+    "title": "Ubah Kamar",
+    "description": "Mengubah data unit kamar berdasarkan ID.",
+    "request": {
+      "number": "102",
+      "room_class_id": 1
+    },
+    "response": {
+      "success": true,
+      "message": "Kamar berhasil diperbarui",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/staff",
+    "title": "Daftar Staff",
+    "description": "Mengambil daftar semua staff.",
+    "request": {},
+    "response": {
+      "success": true,
+      "message": "Daftar staff berhasil diambil",
+      "data": [],
       "errors": null
     }
   },
@@ -71,17 +143,76 @@
     "method": "POST",
     "path": "/api/admin/staff/create",
     "title": "Tambah Staff",
-    "description": "Menambahkan user dengan role staff.",
+    "description": "Menambahkan staff baru.",
     "request": {
-      "name": "Jane Staff",
-      "email": "jane@hotel.com",
-      "password": "secret123",
+      "name": "Staff A",
+      "email": "staff@example.com",
+      "password": "password",
       "hotel_id": 1
     },
     "response": {
       "success": true,
       "message": "Staff berhasil ditambahkan",
       "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "PUT",
+    "path": "/api/admin/staff/{staff}/update",
+    "title": "Ubah Staff",
+    "description": "Mengubah data staff berdasarkan ID.",
+    "request": {
+      "name": "Staff B",
+      "email": "staffb@example.com"
+    },
+    "response": {
+      "success": true,
+      "message": "Staff berhasil diperbarui",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "DELETE",
+    "path": "/api/admin/staff/{staff}/delete",
+    "title": "Hapus Staff",
+    "description": "Menghapus staff berdasarkan ID.",
+    "request": {},
+    "response": {
+      "success": true,
+      "message": "Staff berhasil dihapus",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "POST",
+    "path": "/api/admin/notifications",
+    "title": "Kirim Notifikasi",
+    "description": "Mengirimkan notifikasi ke pengguna sesuai role.",
+    "request": {
+      "title": "Pemberitahuan Penting",
+      "message": "Check-in dimulai pukul 14:00",
+      "roles": ["user", "staff"]
+    },
+    "response": {
+      "success": true,
+      "message": "Notifikasi berhasil dikirim",
+      "data": {},
+      "errors": null
+    }
+  },
+  {
+    "method": "GET",
+    "path": "/api/admin/reservations",
+    "title": "Daftar Reservasi",
+    "description": "Mengambil semua data reservasi.",
+    "request": {},
+    "response": {
+      "success": true,
+      "message": "Daftar reservasi berhasil diambil",
+      "data": [],
       "errors": null
     }
   }

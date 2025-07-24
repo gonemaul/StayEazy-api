@@ -19,7 +19,7 @@
             <li>Role management: Admin, Staff, dan User</li>
             <li>Webhook dan notifikasi dasar</li>
         </ul>
-        <div class="mt-4">
+        <div class="mt-4 flex space-x-5">
             <a href="https://documenter.getpostman.com/view/32145189/2sB34cqiBV" target="_blank"
                 class="text-blue-600 underline text-sm hover:text-blue-800">
                 🔗 <span class="text-sm text-gray-800">Github</span><br>

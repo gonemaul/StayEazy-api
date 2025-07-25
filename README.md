@@ -25,7 +25,7 @@ StayEazy adalah sistem backend REST API untuk manajemen pemesanan vila dan hotel
 
 ## ⚙️ Teknologi
 
-- **Framework**: Laravel 11
+- **Framework**: Laravel 12
 - **Database**: Supabase
 - **Auth**: Laravel Sanctum
 - **Pembayaran**: Midtrans API
